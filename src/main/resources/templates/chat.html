@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Chat</title>
+</head>
+<script type="text/javascript">
+
+  document.addEventListener("DOMContentLoaded", function(){
+
+    document.getElementById("connect").addEventListener("click", function() {
+      let websocket = new WebSocket("ws://localhost:8080/ws/chat");
+
+      websocket.onmessage = onMessage;
+      websocket.onopen = onOpen;
+
+      let username = document.getElementById("username").value;
+
+      function onOpen(event) {
+        let message = username + " 님이 입장했습니다.";
+
+        websocket.send(message);
+      }
+
+      function onMessage(msg) {
+        let message = msg.data;
+
+        let chatBox = document.getElementById("chat-box");
+        chatBox.innerHTML += "<div>" + message + "</div>";
+      }
+
+      document.getElementById("submit").addEventListener("click", function() {
+        let username = document.getElementById("username").value;
+        let chatText = document.getElementById("chat-text");
+
+        websocket.send(username + ":" + chatText.value);
+        chatText.value = '';
+      })
+    });
+  });
+
+</script>
+<body>
+
+<button id="connect" type="button">연결</button>
+
+<div id="chat-box">
+
+</div>
+
+아이디
+<input type="text" id="username">
+<br>
+채팅
+<input type="text" id="chat-text">
+<br>
+<button id="submit" type="button">입력</button>
+
+</body>
+</html>
