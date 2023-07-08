@@ -1,4 +1,4 @@
-package com.example.websocket.configuration;
+package com.example.websocket.controller;
 
 import com.example.websocket.dto.ChatMessageRequest;
 import com.example.websocket.dto.ChatMessageResponse;
