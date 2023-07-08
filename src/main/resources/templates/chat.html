@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Chat</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<script type="text/javascript">
+
+  document.addEventListener("DOMContentLoaded", function() {
+
+    document.getElementById("connect").addEventListener("click", function() {
+      let targetUserName = document.getElementById("target-username").value;
+
+      if (targetUserName.length <= 0) {
+        alert("채팅을 보낼 상대방 아이디를 입력해주세요.");
+        return ;
+      }
+
+      let username = document.getElementById("username").value;
+
+      if (username.length <= 0) {
+        alert("채팅방 유저 이름을 입력해주세요.");
+        return ;
+      }
+
+      let websocket = new WebSocket("ws://localhost:8080/stomp/chat");
+      let stomp = Stomp.over(websocket);
+
+      stomp.connect({ username: username, }, function () {
+        stomp.subscribe("/user/queue/message", function (chat) {
+          let content = JSON.parse(chat.body);
+          let writer = content.writer;
+          let chatBox = document.getElementById("chat-box");
+
+          chatBox.innerHTML += "<div>" + writer + ":" + content.message + "</div>";
+        });
+      });
+
+      document.getElementById("submit").addEventListener("click", function() {
+        let username = document.getElementById("username").value;
+        let chatText = document.getElementById("chat-text");
+
+        stomp.send("/app/chat/message", {}, JSON.stringify({targetUserName: targetUserName, message: chatText.value, writer: username}));
+        chatText.value = '';
+      })
+    });
+  });
+
+</script>
+<body>
+
+<button id="connect" type="button">연결</button>
+
+<div id="chat-box">
+
+</div>
+
+상대방 아이디
+<input type="text" id="target-username">
+<br>
+아이디
+<input type="text" id="username">
+<br>
+채팅
+<input type="text" id="chat-text">
+<br>
+<button id="submit" type="button">입력</button>
+
+</body>
+</html>
