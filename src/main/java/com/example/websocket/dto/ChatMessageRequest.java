@@ -9,6 +9,12 @@ public class ChatMessageRequest {
     public ChatMessageRequest() {
     }
 
+    public ChatMessageRequest(String roomId, String writer, String message) {
+        this.roomId = roomId;
+        this.writer = writer;
+        this.message = message;
+    }
+
     public String getRoomId() {
         return roomId;
     }
